@@ -1,4 +1,5 @@
-const Course = require("../models/course").default;
+const course = require("../models/course");
+const Course = require("../models/course");
 const z = require('zod');
 
 const createCourseBody = z.object({
@@ -18,7 +19,8 @@ exports.createCourse = async (req, res) => {
             });
         }
 
-        const { title, description, category, instructorId } = req.body;
+        const { title, description, category} = req.body;
+        const instructorId = req.userId;
 
         // Get local file path from multer
         const thumbnail = req.file.path;
@@ -47,11 +49,45 @@ exports.createCourse = async (req, res) => {
 
 
 
-exports.getAllCourses = (req, res) => {
+exports.getAllCourses = async (req, res) => {
+
+    try {
+        //Filtering the Database if query is sented
+        let filter = {}; //default no filter
+        const { category , search } = req.query; //Accessing the category and search from url params using the query
+        if(category) {
+           filter.category = category;
+        }
+        if (search) filter.title = { $regex: search, $options: 'i' };
     
+        //Fetch all data(course entries) from database
+        const allCourse = await Course.find();
+        
+        return res.status(200).json({
+            message: "Data Fetched successfuly!:)",
+            Course:allCourse
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(201).json({
+            success:false, error : "Server Error while fetching all course!!:("
+        })     
+    }
+    
+   
 };
 
 
 exports.getCourseById = (req, res) => {
-
+    //getting id from the URL
+    const id = req.param.id;
+   try {
+     const courseById = Course.findById(id)
+     .select('title, description ,thumbnail');
+   } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+        error: "Server error while fetching course"
+    })
+   }
 };
