@@ -1,6 +1,8 @@
-const course = require("../models/course");
 const Course = require("../models/course");
 const z = require('zod');
+
+const fs = require('fs');
+const { cloudinary_js_config } = require("../../config/cloudinary");
 
 const createCourseBody = z.object({
     title: z.string().min(3),
@@ -22,14 +24,27 @@ exports.createCourse = async (req, res) => {
         const { title, description, category} = req.body;
         const instructorId = req.userId;
 
-        // Get local file path from multer
-        const thumbnail = req.file.path;
+        //Checking if the file exist or not !
+        if(!req.file) {
+            return res.status(400).json({
+                error : "Thumbnail is required!"
+            });
+        }
+        
+        //Uploaidng the the file to cloudinary
+        const result = await cloudinary_js_config.uploader.upload(req.file.path, {
+            folder: 'course-thumbnails',
+            resource_type: 'image'
+        });
+
+        // Delete local file after upload
+        fs.unlinkSync(req.file.path);
 
         // Create course
         const newCourse = await Course.create({
             title,
             description,
-            thumbnail,
+            thumbnail : result.secure_url,
             category,
             instructorId
         });
