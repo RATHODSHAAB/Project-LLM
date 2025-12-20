@@ -8,6 +8,8 @@ router.use(authMiddleware);
 router.use(instructorMiddleware);
 
 router.post('/:courseId', lessonController.addLesson);
+
+
 router.get('/:courseId', lessonController.getLessonsByCourse);
 
 

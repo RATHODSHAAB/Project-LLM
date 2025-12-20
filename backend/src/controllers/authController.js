@@ -24,7 +24,12 @@ exports.signup  = async (req,res) => {
             });
         }
         //Getting the {username} , email , passsowrd from the body of the request
-    const {username, email , password } = req.body;
+    const {username, email , password  } = req.body;
+
+    const allowedRoles = ["student", "instructor"];
+    const role = allowedRoles.includes(req.body.role)
+      ? req.body.role
+      : "student";
 
     //Checking if user exist or not => I think this is not needed 
     const exisitingUser = await User.findOne({
@@ -40,12 +45,13 @@ exports.signup  = async (req,res) => {
     const newUser = await User.create({
         username:username,
         email:email,
-        password: hashedPassword
+        password: hashedPassword,
+        role,
     });
 
     
     const token = jwt.sign({
-        userId : newUser._id , username: newUser.username
+        userId : newUser._id , username: newUser.username , role: newUser.role
     }, JWT_SECRET,
     {expiresIn:"1h"})
 
@@ -54,6 +60,7 @@ exports.signup  = async (req,res) => {
         User: {
             id: newUser._id,
             username: newUser.username,
+            role: newUser.role,
         }
     });
     } catch (error) {
@@ -75,7 +82,7 @@ exports.signin = async (req,res) => {
       username:username
     })
     if(!exisitingUser) {
-        return  res.status(400).json({ error : "Invalid Username or password!" });
+        return  res.status(400).json({ error : "Invalid Username or password" });
     }
 
     //Validating Password

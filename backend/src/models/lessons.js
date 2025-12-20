@@ -1,43 +1,40 @@
 const mongoose = require('mongoose');
 
-const courseSchema = new mongoose.Schema(
-  {
-    // Course title (e.g., "Complete Backend Development")
-    title: {
-      type: String,
-      required: true,
-      trim: true
+const lessonSchema = new mongoose.Schema(
+    {
+      // Title of the lesson (e.g., "Introduction to Node.js")
+      title: {
+        type: String,
+        required: true,
+        trim: true
+      },
+  
+      // Detailed explanation / text content of the lesson
+      description: {
+        type: String,
+        required: true
+      },
+  
+      // Video URL returned from Cloudinary after upload
+      // This is NOT the video file itself, just the link
+      videoURL: {
+        type: String,
+        required: true
+      },
+  
+      // 🔗 RELATIONSHIP FIELD
+      // This stores the _id of the Course document
+      // It tells MongoDB: "This lesson belongs to this course"
+      courseId: {
+        type: mongoose.Schema.Types.ObjectId, // must match Course _id type
+        ref: 'Course',                        // tells Mongoose which model it refers to
+        required: true
+      }
     },
-
-    // Short description about the course
-    description: {
-      type: String
-    },
-
-    // Thumbnail image URL (usually from Cloudinary)
-    thumbnail: {
-      type: String,
-      required: true
-    },
-
-    // Category of the course (Backend, Frontend, DevOps, etc.)
-    category: {
-      type: String,
-      required: true
-    },
-
-    // ID of the instructor who created this course
-    // This usually comes from the User collection
-    instructorId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',   // assuming you have a User model
-      required: true
+    {
+      // Automatically adds createdAt and updatedAt timestamps
+      timestamps: true
     }
-  },
-  {
-    // Adds createdAt and updatedAt automatically
-    timestamps: true
-  }
 );
 
-module.exports = mongoose.model('Course', courseSchema);
+module.exports = mongoose.model('Lesson', lessonSchema);

@@ -18,10 +18,11 @@ const authMiddleware = (req, res, next) => {
 
         // Verify token
         const payload = verify(token, JWT_SECRET);
+        console.log('JWT Payload:', payload);
         
         // Attach user data to request
         req.user = { 
-            id: payload.id,
+            id: payload.userId,
             email: payload.email,
             role: payload.role // if you have roles
         };

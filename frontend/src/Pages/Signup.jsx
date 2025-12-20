@@ -1,7 +1,43 @@
-import { Link } from "react-router-dom"
+import { Link , useNavigate } from "react-router-dom"
 import { Navbar } from "../Components/Navbar"
+import { useState } from "react";
+import axios from 'axios';
 
 export const Signup = () => {
+  const navigate = useNavigate();
+    const [postInputs, setPostInputs] = useState({
+          username : "",
+          email: "",
+          password : "",
+          role: "",
+    });
+
+    const handleSubmit =  async (e) => {
+      e.preventDefault();
+
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/api/auth/signup",
+          postInputs
+        );
+      const jwt = response.data.jwt;
+      localStorage.setItem("token", jwt);
+      navigate("/courselist");
+        console.log("Success : " , response.data)
+      } catch (error) {
+        console.log(
+          error.response?.data?.message || "Signup Failed"
+        );
+      }
+    }
+
+    const handleChange = (e) => {
+      const { name , value } = e.target; //destructuring the value fomm e.target
+      setPostInputs((prev) => ({
+        ...prev,
+        [name] : value,
+      }));
+    };
     return (
         <>
         <Navbar></Navbar>
@@ -18,6 +54,9 @@ export const Signup = () => {
 
         <form className="flex flex-col gap-4">
             <input
+            value={postInputs.username}
+            onChange={handleChange}
+            name="username"
             type="text"
             placeholder="Username"
             className="bg-gray-800 text-white px-4 py-3 rounded-lg outline-none "
@@ -25,18 +64,27 @@ export const Signup = () => {
         
         
           <input
+          value={postInputs.email}
+          onChange={handleChange}
+          name="email"
             type="email"
             placeholder="Email"
             className="bg-gray-800 text-white px-4 py-3 rounded-lg outline-none "
           />
          
           <input
+          value={postInputs.password}
+          onChange={handleChange}
+          name="password"
             type="password"
             placeholder="Password"
             className="bg-gray-800 text-white px-4 py-3 rounded-lg outline-none"
           />
           
-          <select
+          <select name="role"
+          value={postInputs.role}
+          onChange={handleChange}
+          
             className="bg-gray-800 text-white px-4 py-3 rounded-lg outline-none"
           >
             <option value="">Select Role</option>
@@ -47,6 +95,7 @@ export const Signup = () => {
           
           <button
             type="submit"
+            onClick={handleSubmit}
             className="bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 hover:cursor-pointer transition"
           >
             Sign Up
@@ -59,7 +108,6 @@ export const Signup = () => {
         </div>
       </div>
     </div>
- 
         </>
     )
 }

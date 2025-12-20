@@ -1,7 +1,41 @@
-import { Link } from "react-router-dom"
+import { Link , useNavigate } from "react-router-dom"
 import { Navbar } from "../Components/Navbar"
+import { useState } from "react";
+import axios from "axios";
 
 export const Login = () => {
+    const navigate = useNavigate();
+    const [postInputs, setPostInputs] = useState({
+        username: "",
+        password : "",
+    });
+
+    const handleSubmit =  async (e) => {
+      e.preventDefault();
+
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/api/auth/signin",
+          postInputs
+        );
+      const jwt = response.data.token;
+      localStorage.setItem("token", jwt);
+      navigate("/courselist");
+        console.log("Success : " , response.data)
+      } catch (error) {
+        console.log(
+          error.response?.data?.message || "Signup Failed"
+        );
+      }
+    }
+
+    const handleChange = (e) => {
+      const { name , value } = e.target; //destructuring the value fomm e.target
+      setPostInputs((prev) => ({
+        ...prev,
+        [name] : value,
+      }));
+    };
     return (
         <>
         <Navbar></Navbar>
@@ -11,18 +45,26 @@ export const Login = () => {
                     Login to your account
                 </h1>
                 <form className="flex flex-col gap-4">
-                    <input 
+                    <input
+                    onChange={handleChange}
+                    name="username"
+                    value={postInputs.email}
                     type="text"
                     placeholder="Email"
                     className="text-white border border-gray-700 outline-none px-4 py-3 rounded-lg" />
 
                      <input 
+                     onChange={handleChange}
+                     name="password"
+                     value={postInputs.password}
                     type="password"
                     placeholder="Password"
                     className="text-white border border-gray-700 outline-none px-4 py-3 rounded-lg" />
 
                     
                     <button 
+                    onClick={handleSubmit}
+                    type="submit"
                     className="bg-blue-600 text-white border border-gray-700 rounded-lg px-4 py-3 hover:cursor-pointer">
                         Login
                     </button>

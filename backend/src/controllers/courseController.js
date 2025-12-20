@@ -2,7 +2,7 @@ const Course = require("../models/course");
 const z = require('zod');
 
 const fs = require('fs');
-const { cloudinary_js_config } = require("../../config/cloudinary");
+const cloudinary  = require("../../config/cloudinary");
 
 const createCourseBody = z.object({
     title: z.string().min(3),
@@ -22,8 +22,12 @@ exports.createCourse = async (req, res) => {
         }
 
         const { title, description, category} = req.body;
-        const instructorId = req.userId;
+        const instructorId = req.user.id;
+        if (req.user.role !== "instructor") {
+        return res.status(403).json({ error: "Only instructors can create courses" });
+        }
 
+        
         //Checking if the file exist or not !
         if(!req.file) {
             return res.status(400).json({
@@ -32,7 +36,7 @@ exports.createCourse = async (req, res) => {
         }
         
         //Uploaidng the the file to cloudinary
-        const result = await cloudinary_js_config.uploader.upload(req.file.path, {
+        const result = await cloudinary.uploader.upload(req.file.path, {
             folder: 'course-thumbnails',
             resource_type: 'image'
         });
@@ -65,31 +69,29 @@ exports.createCourse = async (req, res) => {
 
 
 exports.getAllCourses = async (req, res) => {
+    
+  try {
+    let filter = {};
 
-    try {
-        //Filtering the Database if query is sented
-        let filter = {}; //default no filter
-        const { category , search } = req.query; //Accessing the category and search from url params using the query
-        if(category) {
-           filter.category = category;
-        }
-        if (search) filter.title = { $regex: search, $options: 'i' };
-    
-        //Fetch all data(course entries) from database
-        const allCourse = await Course.find();
-        
-        return res.status(200).json({
-            message: "Data Fetched successfuly!:)",
-            Course:allCourse
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(201).json({
-            success:false, error : "Server Error while fetching all course!!:("
-        })     
+    const { category} = req.query;
+
+    if (category) {
+      filter.category = category;
     }
-    
-   
+
+    const allCourse = await Course.find(filter);
+
+    return res.status(200).json({
+      message: "Data fetched successfully",
+      courses: allCourse,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      error: "Server error while fetching courses",
+    });
+  }
 };
 
 
