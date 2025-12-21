@@ -23,7 +23,7 @@ const authMiddleware = (req, res, next) => {
         // Attach user data to request
         req.user = { 
             id: payload.userId,
-            email: payload.email,
+            username: payload.username,
             role: payload.role // if you have roles
         };
 

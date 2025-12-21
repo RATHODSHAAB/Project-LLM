@@ -94,7 +94,7 @@ exports.signin = async (req,res) => {
     }
 
     const token  =  jwt.sign({
-        userId: exisitingUser._id, username: exisitingUser.username
+        userId: exisitingUser._id, username: exisitingUser.username , role : exisitingUser.role
     },JWT_SECRET, {expiresIn:"24h"})
 
     return res.status(200).json({ 

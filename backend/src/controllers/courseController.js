@@ -12,6 +12,7 @@ const createCourseBody = z.object({
 
 exports.createCourse = async (req, res) => {
     try {
+  
         // Validate input
         const parsed = createCourseBody.safeParse(req.body);
 
@@ -49,7 +50,7 @@ exports.createCourse = async (req, res) => {
             title,
             description,
             thumbnail : result.secure_url,
-            category,
+            category: category.trim().toLowerCase(),
             instructorId
         });
 
@@ -75,9 +76,11 @@ exports.getAllCourses = async (req, res) => {
 
     const { category} = req.query;
 
-    if (category) {
-      filter.category = category;
+    if (category && category.trim() !== "") {
+      filter.category = { $regex: `^${category.trim()}$`, $options: "i" };
     }
+
+    console.log("CATEGORY FROM QUERY:", req.query.category);
 
     const allCourse = await Course.find(filter);
 
