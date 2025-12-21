@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Navbar } from "../Components/Navbar"
 import { useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 
 export const CourseList = () => {
@@ -65,6 +66,7 @@ export const CourseList = () => {
  
 
 function CourseCard({ course }) {
+
   return (
     <div className="border border-gray-800 rounded-2xl p-6 backdrop-blur-xl bg-gray-800/5">
 
@@ -72,7 +74,7 @@ function CourseCard({ course }) {
       <h2 className="text-lg font-bold">{course.title}</h2> 
       <p>{course.description}</p>
      <button className="w-full bg-gray-900  py-2 rounded-lg font-medium mt-1 hover:cursor-pointer">
-          Visit Course
+        <Link to={`/courses/${course._id}`}>Visit Course</Link>
         </button>
     </div>
   );

@@ -1,222 +1,116 @@
 const Lessons = require("../models/lessons");
-const Course = require("../models/course"); // ✅ ADD THIS
-const z = require('zod');
+const Course = require("../models/course");
+const cloudinary = require("../../config/cloudinary");
+const z = require("zod");
 
+/* -------------------- VALIDATION -------------------- */
 const addLessonBody = z.object({
-    title: z.string().min(3),
-    description: z.string(),
-    videoURL: z.string()
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
 });
 
-// ✅ addLesson - CORRECTED
+/* ====================================================
+   ADD LESSON (INSTRUCTOR ONLY)
+==================================================== */
 exports.addLesson = async (req, res) => {
-    try {
-        const parsed = addLessonBody.safeParse(req.body);
-
-        if (!parsed.success) {
-            return res.status(400).json({ // ✅ Changed to 400
-                error: "Invalid lesson data",
-                details: parsed.error.errors
-            });
-        }
-
-        const {title, description, videoURL} = req.body;
-        const courseId = req.params.courseId;
-
-        // ✅ Fixed findById syntax
-        const courseExists = await Course.findById(courseId);
-        if (!courseExists) {
-            return res.status(404).json({ error: "Course not found" });
-        }
-
-        // TODO: Upload video to cloudinary
-
-        const lesson = await Lessons.create({
-            title,
-            description,
-            videoURL,
-            courseId
-        });
-
-        // ✅ OPTIONAL: Push lesson to course.lessons array
-        await Course.findByIdAndUpdate(courseId, {
-            $push: { lessons: lesson._id }
-        });
-
-        return res.status(201).json({ // ✅ 201 for created
-            message: "Lesson created successfully!",
-            lesson
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            message: "Failed to create lesson",
-            error: error.message
-        });
+  try {
+    // Validate body
+    const parsed = addLessonBody.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ errors: parsed.error.errors });
     }
-}
 
-// ✅ getLessonsByCourse - CORRECTED
+    const { title, description } = req.body;
+    const { courseId } = req.params;
+    const userId = req.user.id;
+
+    // Check course
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    // 🔐 Authorization
+    if (course.instructor.toString() !== userId) {
+      return res.status(403).json({
+        error: "You are not authorized to add lessons to this course",
+      });
+    }
+
+    // Check video
+    if (!req.file) {
+      return res.status(400).json({ error: "Video file is required" });
+    }
+
+    // ☁️ Upload video to Cloudinary
+    const uploadResult = await cloudinary.uploader.upload(
+      `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+      {
+        resource_type: "video",
+        folder: "course-videos",
+      }
+    );
+
+    // Create lesson
+    const lesson = await Lessons.create({
+      title,
+      description,
+      videoURL: uploadResult.secure_url,
+      courseId,
+    });
+
+    // Link lesson to course
+    course.lessons.push(lesson._id);
+    await course.save();
+
+    return res.status(201).json({
+      message: "Lesson created successfully",
+      lesson,
+    });
+  } catch (error) {
+    console.error("Add Lesson Error:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
+/* ====================================================
+   GET LESSONS BY COURSE (PUBLIC)
+==================================================== */
 exports.getLessonsByCourse = async (req, res) => {
-    try {
-        const courseId = req.params.courseId; // ✅ Fixed destructuring
-        
-        // ✅ Changed to find() and added await
-        const lessons = await Lessons.find({ courseId: courseId });
-        
-        if(!lessons || lessons.length === 0) {
-            return res.status(404).json({
-                message: "No lessons found for this course"
-            });
-        }
+  try {
+    const { courseId } = req.params;
 
-        return res.status(200).json({
-            message: "Lessons found",
-            count: lessons.length,
-            lessons // ✅ Renamed variable
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            message: "Error while finding lessons",
-            error: error.message
-        });
-    }
-}
+    const lessons = await Lessons.find({ courseId }).sort({ createdAt: 1 });
 
-// ✅ getLessonById - CORRECTED
+    return res.status(200).json({
+      message: "Lessons fetched successfully",
+      count: lessons.length,
+      lessons,
+    });
+  } catch (error) {
+    console.error("Get Lessons Error:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
+/* ====================================================
+   GET SINGLE LESSON (PUBLIC)
+==================================================== */
 exports.getLessonById = async (req, res) => {
-    try {
-        const lessonId = req.params.lessonId;
-        
-        // ✅ Simplified - just fetch the lesson
-        const lesson = await Lessons.findById(lessonId);
-        
-        // ✅ Added response
-        if (!lesson) {
-            return res.status(404).json({ error: "Lesson not found" });
-        }
+  try {
+    const { lessonId } = req.params;
 
-        return res.status(200).json({
-            message: "Lesson found",
-            lesson
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ 
-            error: "Server Error",
-            message: error.message 
-        });
+    const lesson = await Lessons.findById(lessonId);
+    if (!lesson) {
+      return res.status(404).json({ error: "Lesson not found" });
     }
-}
 
-// ✅ updateLesson - CORRECTED
-exports.updateLesson = async (req, res) => {
-    try {
-        const lessonId = req.params.lessonId;
-        
-        if(!lessonId) {
-            return res.status(400).json({
-                message: "Lesson ID is required"
-            });
-        }
-
-        const userId = req.user.id;
-        
-        // ✅ First find the lesson
-        const lesson = await Lessons.findById(lessonId);
-        if (!lesson) {
-            return res.status(404).json({ error: "Lesson not found" });
-        }
-
-        // ✅ Then check if user is the course instructor
-        const course = await Course.findById(lesson.courseId);
-        if (!course) {
-            return res.status(404).json({ error: "Course not found" });
-        }
-
-        if (course.instructor.toString() !== userId) {
-            return res.status(403).json({
-                error: "You are not authorized to update this lesson"
-            });
-        }
-
-        const {title, description, videoURL} = req.body;
-
-        // TODO: If new video uploaded, upload to cloudinary
-        // const updatedVideoURL = await uploadToCloudinary(videoURL);
-
-        // ✅ Fixed updateOne syntax
-        const updatedLesson = await Lessons.findByIdAndUpdate(
-            lessonId,
-            {
-                title,
-                description,
-                videoURL // ✅ Use videoURL instead of thumbnail
-            },
-            { new: true } // Return updated document
-        );
-
-        return res.status(200).json({
-            message: "Lesson updated successfully!",
-            lesson: updatedLesson
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ 
-            error: "Server Error",
-            message: error.message 
-        });
-    }
-}
-
-// ✅ deleteLesson - COMPLETED
-exports.deleteLesson = async (req, res) => {
-    try {
-        const lessonId = req.params.lessonId; // ✅ Fixed params access
-        
-        if(!lessonId) {
-            return res.status(400).json({
-                message: "Lesson ID is required"
-            });
-        }
-
-        // Find the lesson
-        const lesson = await Lessons.findById(lessonId);
-        if (!lesson) {
-            return res.status(404).json({ error: "Lesson not found" });
-        }
-
-        // ✅ Fetch parent course
-        const course = await Course.findById(lesson.courseId);
-        if (!course) {
-            return res.status(404).json({ error: "Course not found" });
-        }
-
-        // ✅ Verify instructor
-        const userId = req.user.id;
-        if (course.instructor.toString() !== userId) {
-            return res.status(403).json({
-                error: "You are not authorized to delete this lesson"
-            });
-        }
-
-        // ✅ Delete lesson
-        await Lessons.findByIdAndDelete(lessonId);
-
-        // ✅ Remove from course.lessons array
-        await Course.findByIdAndUpdate(course._id, {
-            $pull: { lessons: lessonId }
-        });
-
-        return res.status(200).json({
-            message: "Lesson deleted successfully"
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ 
-            error: "Server Error",
-            message: error.message 
-        });
-    }
-}
+    return res.status(200).json({
+      message: "Lesson fetched successfully",
+      lesson,
+    });
+  } catch (error) {
+    console.error("Get Lesson Error:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+};

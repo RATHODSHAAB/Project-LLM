@@ -4,6 +4,9 @@ import { Signup } from './Pages/Signup'
 import { Login } from './Pages/Login'
 import { CourseList } from './Pages/CourseList'
 import { AddCourse } from './Pages/AddCourse'
+import { AddLesson } from './Pages/AddLesson'
+import { CourseDetails } from './Pages/CourseDetails'
+import { LessonPlayer } from './Pages/LessonPlayer'
 
 function App() {
  return (
@@ -14,7 +17,9 @@ function App() {
             <Route path='/login' element={<Login></Login>}></Route>
             <Route path='/courselist' element={<CourseList></CourseList>}></Route>
             <Route path='/addcourse' element={<AddCourse></AddCourse>}></Route>
-
+            <Route path='/addlesson' element={<AddLesson></AddLesson>}></Route>
+            <Route path='/coursedetails' element={<CourseDetails></CourseDetails>}></Route>
+            <Route path="/lessons/:lessonId" element={<LessonPlayer />} />
         </Routes>
     </BrowserRouter>
   </>
