@@ -11,6 +11,7 @@ export const AddCourse = () => {
     thumbnail: null,  // Changed to null for file
     category: ""
   });
+  
 
   const handleSubmit = async (e) => {
   e.preventDefault();
