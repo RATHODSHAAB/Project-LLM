@@ -44,7 +44,7 @@ export const CourseList = () => {
                 onChange={(e)=> setCategory(e.target.value)}
                 className="bg-gray-800  px-3 py-2 pl-2 rounded-lg outline-none mt-15 ml-12">
                     <option value="">Course</option>
-                    <option value="Full Stack">Full Stack</option>
+                    <option value="full Stack">Full Stack</option>
                     <option value="Dsa"> Dsa </option>
                     <option value="Blockchain"> Blockchain </option>
                 </select>
