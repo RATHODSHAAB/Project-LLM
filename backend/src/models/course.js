@@ -1,41 +1,48 @@
 const mongoose = require('mongoose');
 
 const courseSchema = new mongoose.Schema(
- {
-    // Course title (e.g., "Complete Backend Development")
+  {
+    // Course title
     title: {
       type: String,
       required: true,
       trim: true
     },
 
-    // Short description about the course
+    // Description
     description: {
       type: String
     },
 
-    // Thumbnail image URL (usually from Cloudinary)
+    // Thumbnail
     thumbnail: {
       type: String,
       required: true
     },
 
-    // Category of the course (Backend, Frontend, DevOps, etc.)
+    // Category
     category: {
       type: String,
       required: true
     },
 
-    // ID of the instructor who created this course
-    // This usually comes from the User collection
+    // Instructor
     instructorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',   // assuming you have a User model
+      ref: 'User',
       required: true
-    }
+    },
+
+    // ✅ Lessons array (this must be inside the schema definition)
+    lessons: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Lesson'
+      }
+    ]
   },
   {
-    // Adds createdAt and updatedAt automatically
+    // Options
     timestamps: true
   }
 );

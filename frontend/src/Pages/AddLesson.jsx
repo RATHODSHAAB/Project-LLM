@@ -35,7 +35,7 @@ export const AddLesson = () => {
       );
 
       console.log("Success:", response.data);
-      navigate(`/course/${courseId}`);
+      navigate(`/courses/${courseId}`);
     } catch (error) {
       console.log("Error:", error.response?.data || error.message);
     }

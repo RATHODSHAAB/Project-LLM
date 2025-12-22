@@ -17,8 +17,8 @@ function App() {
             <Route path='/login' element={<Login></Login>}></Route>
             <Route path='/courselist' element={<CourseList></CourseList>}></Route>
             <Route path='/addcourse' element={<AddCourse></AddCourse>}></Route>
-            <Route path='/addlesson' element={<AddLesson></AddLesson>}></Route>
-            <Route path='/coursedetails' element={<CourseDetails></CourseDetails>}></Route>
+            <Route path='/courses/:courseId/add-lesson' element={<AddLesson></AddLesson>}></Route>
+            <Route path='/courses/:courseId' element={<CourseDetails></CourseDetails>}></Route>
             <Route path="/lessons/:lessonId" element={<LessonPlayer />} />
         </Routes>
     </BrowserRouter>

@@ -9,8 +9,14 @@ export const CourseDetails = () => {
 
   useEffect(() => {
     const fetchLessons = async () => {
+      const token = localStorage.getItem("token");
       const res = await axios.get(
-        `http://localhost:5000/api/lessons/course/${courseId}`
+        `http://localhost:5000/api/lessons/course/${courseId}`,
+       {
+         headers: {
+          Authorization: `Bearer ${token}`,
+      },
+    }
       );
       setLessons(res.data.lessons);
     };
@@ -22,7 +28,17 @@ export const CourseDetails = () => {
     <>
       <Navbar />
       <div className="min-h-screen bg-linear-to-br from-gray-900 to-black p-6">
+        <div className=" w-full flex justify-end">
+          <Link to={`/courses/${courseId}/add-lesson`}>
+            <button className= " bg-green-600  rounded-xl text-white p-1.5 mr-32 mt-1.5 cursor-pointer">
+              Add course
+            </button>
+          </Link>
+
+        </div>
+
         <div className="flex flex-col gap-4 max-w-3xl mx-auto">
+
           {lessons.map((lesson) => (
             <LessonCard key={lesson._id} lesson={lesson} />
           ))}
@@ -44,3 +60,4 @@ function LessonCard({ lesson }) {
     </Link>
   );
 }
+

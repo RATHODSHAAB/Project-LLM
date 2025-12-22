@@ -24,20 +24,23 @@ exports.addLesson = async (req, res) => {
     const { courseId } = req.params;
     const userId = req.user.id;
 
-    // Check course
     const course = await Course.findById(courseId);
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
     }
 
-    // 🔐 Authorization
-    if (course.instructor.toString() !== userId) {
+    // ✅ ROLE CHECK
+    if (req.user.role !== "instructor") {
+      return res.status(403).json({ error: "Instructor only" });
+    }
+
+    // ✅ OWNERSHIP CHECK (THIS WAS BROKEN BEFORE)
+    if (!course.instructorId.equals(userId)) {
       return res.status(403).json({
         error: "You are not authorized to add lessons to this course",
       });
     }
 
-    // Check video
     if (!req.file) {
       return res.status(400).json({ error: "Video file is required" });
     }

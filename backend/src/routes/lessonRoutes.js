@@ -5,17 +5,17 @@ const { authMiddleware, instructorMiddleware } = require('../middleware/authMidd
 const { videoUpload } = require('../middleware/multer');
 
 
-router.use(authMiddleware);
-router.use(instructorMiddleware);
 
-router.post("/lessons/:courseId",authMiddleware,
+router.post("/:courseId",authMiddleware,
   instructorMiddleware, videoUpload.single("video"), lessonController.addLesson);
 
 
-router.get('/:courseId', lessonController.getLessonsByCourse);
+router.get('/course/:courseId', lessonController.getLessonsByCourse);
 
 
-router.get('/lessons/:lessonId', lessonController.getLessonById);
+router.get('/:lessonId', lessonController.getLessonById);
 
 
 module.exports = router;
+
+//http://localhost:5000/api/lessons/${courseId}

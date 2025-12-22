@@ -64,7 +64,8 @@ export const CourseList = () => {
     )
 }
  
-
+//The link in the button will lead to that specific course => it will take to course details page where we 
+//can see the rectangle box ! showing title and lilltle bit description ! 
 function CourseCard({ course }) {
 
   return (
@@ -74,7 +75,7 @@ function CourseCard({ course }) {
       <h2 className="text-lg font-bold">{course.title}</h2> 
       <p>{course.description}</p>
      <button className="w-full bg-gray-900  py-2 rounded-lg font-medium mt-1 hover:cursor-pointer">
-        <Link to={`/courses/${course._id}`}>Visit Course</Link>
+        <Link to={`/courses/${course._id}`}>Visit Course</Link>  
         </button>
     </div>
   );
