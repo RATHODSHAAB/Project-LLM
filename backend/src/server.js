@@ -18,7 +18,7 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: [
-    "http://localhost:5173",   // local frontend
+    "https://project-a0dk10uqe-rathodshaabs-projects.vercel.app/login",  
   ],
   credentials: true
 }));
