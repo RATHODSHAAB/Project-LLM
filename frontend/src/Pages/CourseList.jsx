@@ -21,7 +21,7 @@ export const CourseList = () => {
         return ;
       } // optional safety
 
-      const response = await API.get("/courses", {
+      const response = await API.get("/api//courses", {
         headers: { Authorization: `Bearer ${token}` },
         params: { category },
       });

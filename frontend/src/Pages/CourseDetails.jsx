@@ -15,7 +15,7 @@ export const CourseDetails = () => {
     const fetchLessons = async () => {
       const token = localStorage.getItem("token");
       const res = await API.get(
-        `/lessons/course/${courseId}`,
+        `/api/lessons/course/${courseId}`,
        {
          headers: {
           Authorization: `Bearer ${token}`,

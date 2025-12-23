@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { Navbar } from "../Components/Navbar"
 import { useState } from "react"
 import axios from "axios";
+import { API } from "../api";
 
 export const AddCourse = () => {
   const navigate = useNavigate();
@@ -31,8 +32,8 @@ export const AddCourse = () => {
       "Content-Type": "multipart/form-data"
     });
 
-    const response = await axios.post(
-      "/courses",
+    const response = await API.post(
+      "/api/courses",
       formData,
       {
         headers: {

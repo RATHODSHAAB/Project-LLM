@@ -21,17 +21,23 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
+    
+    // Allow all Vercel preview deployments + localhost
+    if (
+      origin.includes('localhost') || 
+      origin.includes('vercel.app') ||
+      origin.includes('yourdomain.com') // add your custom domain if any
+    ) {
       callback(null, true);
     } else {
-      callback(new Error("CORS not allowed")); // ✅ CHANGE TO THIS
+      callback(new Error("CORS not allowed"));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // ✅ ADD THIS
-  allowedHeaders: ['Content-Type', 'Authorization'] // ✅ ADD THIS
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());

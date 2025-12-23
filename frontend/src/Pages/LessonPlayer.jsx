@@ -13,7 +13,7 @@ export const LessonPlayer = () => {
     const fetchLesson = async () => {
       try {
         const res = await API.get(
-          `/lessons/${lessonId}`
+          `/api/lessons/${lessonId}`
         );
         setLesson(res.data.lesson);
       } catch (error) {
