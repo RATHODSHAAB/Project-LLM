@@ -25,10 +25,12 @@ app.use(cors({
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(null, false); // ❗ DO NOT throw error
+      callback(new Error("CORS not allowed")); // ✅ CHANGE TO THIS
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // ✅ ADD THIS
+  allowedHeaders: ['Content-Type', 'Authorization'] // ✅ ADD THIS
 }));
 
 app.use(express.json());
