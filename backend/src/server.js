@@ -13,10 +13,7 @@ const app = express();
    CORS CONFIG (FIXED)
 ======================= */
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://lms-pearl-seven.vercel.app"  // ✅ ADD THIS
-];
+
 
 app.use(cors({
   origin: function (origin, callback) {
