@@ -16,12 +16,15 @@ const app = express();
 
 
 // Middleware
+
 app.use(cors({
   origin: [
-    "https://project-a0dk10uqe-rathodshaabs-projects.vercel.app/login",  
+    "http://localhost:5173", // local frontend
+    "https://project-a0dk10uqe-rathodshaabs-projects.vercel.app" // vercel frontend
   ],
   credentials: true
 }));
+
 app.use(express.json());
 
 // Routes
