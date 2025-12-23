@@ -16,7 +16,7 @@ export const Login = () => {
 
       try {
         const response = await API.post(
-          "/auth/signin",
+          "/api//auth/signin",
           postInputs
         );
       const jwt = response.data.token;
