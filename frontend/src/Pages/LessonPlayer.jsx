@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Navbar } from "../Components/Navbar";
+import { API } from "../api";
 
 export const LessonPlayer = () => {
   const { lessonId } = useParams();
@@ -11,8 +12,8 @@ export const LessonPlayer = () => {
   useEffect(() => {
     const fetchLesson = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/lessons/${lessonId}`
+        const res = await API.get(
+          `/api/lessons/${lessonId}`
         );
         setLesson(res.data.lesson);
       } catch (error) {

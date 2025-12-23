@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Navbar } from "../Components/Navbar";
 import { useState } from "react";
 import axios from "axios";
+import { API } from "../api";
 
 export const AddLesson = () => {
   const navigate = useNavigate();
@@ -24,8 +25,8 @@ export const AddLesson = () => {
       formData.append("description", postInputs.description);
       formData.append("video", postInputs.videoURL); // ✅ backend expects "video"
 
-      const response = await axios.post(
-        `http://localhost:5000/api/lessons/${courseId}`,
+      const response = await API.post(
+        `/api/lessons/${courseId}`,
         formData,
         {
           headers: {

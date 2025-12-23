@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { Navbar } from "../Components/Navbar";
 import {jwtDecode} from 'jwt-decode';
+import { API } from "../api";
 
 export const CourseDetails = () => {
   const { courseId } = useParams();
@@ -13,8 +14,8 @@ export const CourseDetails = () => {
   useEffect(() => {
     const fetchLessons = async () => {
       const token = localStorage.getItem("token");
-      const res = await axios.get(
-        `http://localhost:5000/api/lessons/course/${courseId}`,
+      const res = await API.get(
+        `/api/lessons/course/${courseId}`,
        {
          headers: {
           Authorization: `Bearer ${token}`,

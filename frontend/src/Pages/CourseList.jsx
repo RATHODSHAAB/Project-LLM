@@ -3,6 +3,7 @@ import { Navbar } from "../Components/Navbar"
 import { useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { API } from "../api";
 
 
 export const CourseList = () => {
@@ -20,7 +21,7 @@ export const CourseList = () => {
         return ;
       } // optional safety
 
-      const response = await axios.get("http://localhost:5000/api/courses", {
+      const response = await API.get("/api/courses", {
         headers: { Authorization: `Bearer ${token}` },
         params: { category },
       });

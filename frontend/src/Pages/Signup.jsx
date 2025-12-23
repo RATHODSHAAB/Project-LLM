@@ -2,6 +2,7 @@ import { Link , useNavigate } from "react-router-dom"
 import { Navbar } from "../Components/Navbar"
 import { useState } from "react";
 import axios from 'axios';
+import { API } from "../api";
 
 export const Signup = () => {
   const navigate = useNavigate();
@@ -15,8 +16,8 @@ export const Signup = () => {
       e.preventDefault();
 
       try {
-        const response = await axios.post(
-          "http://localhost:5000/api/auth/signup",
+        const response = await API.post(
+          "/api/auth/signup",
           postInputs
         );
       const jwt = response.data.jwt;

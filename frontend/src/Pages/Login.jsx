@@ -2,6 +2,7 @@ import { Link , useNavigate } from "react-router-dom"
 import { Navbar } from "../Components/Navbar"
 import { useState } from "react";
 import axios from "axios";
+import { API } from "../api";
 
 export const Login = () => {
     const navigate = useNavigate();
@@ -14,8 +15,8 @@ export const Login = () => {
       e.preventDefault();
 
       try {
-        const response = await axios.post(
-          "http://localhost:5000/api/auth/signin",
+        const response = await API.post(
+          "/api/auth/signin",
           postInputs
         );
       const jwt = response.data.token;
@@ -48,7 +49,7 @@ export const Login = () => {
                     <input
                     onChange={handleChange}
                     name="username"
-                    value={postInputs.email}
+                    value={postInputs.username}
                     type="text"
                     placeholder="Email"
                     className="text-white border border-gray-700 outline-none px-4 py-3 rounded-lg" />

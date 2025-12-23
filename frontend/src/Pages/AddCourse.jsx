@@ -32,7 +32,7 @@ export const AddCourse = () => {
     });
 
     const response = await axios.post(
-      "http://localhost:5000/api/courses",
+      "/api/courses",
       formData,
       {
         headers: {
