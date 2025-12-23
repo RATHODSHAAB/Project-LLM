@@ -17,7 +17,7 @@ export const Signup = () => {
 
       try {
         const response = await API.post(
-          "/api/auth/signup",
+          "/auth/signup",
           postInputs
         );
       const jwt = response.data.jwt;

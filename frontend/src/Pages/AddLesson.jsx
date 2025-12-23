@@ -26,7 +26,7 @@ export const AddLesson = () => {
       formData.append("video", postInputs.videoURL); // ✅ backend expects "video"
 
       const response = await API.post(
-        `/api/lessons/${courseId}`,
+        `/lessons/${courseId}`,
         formData,
         {
           headers: {

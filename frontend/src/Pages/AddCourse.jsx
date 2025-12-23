@@ -32,7 +32,7 @@ export const AddCourse = () => {
     });
 
     const response = await axios.post(
-      "/api/courses",
+      "/courses",
       formData,
       {
         headers: {
