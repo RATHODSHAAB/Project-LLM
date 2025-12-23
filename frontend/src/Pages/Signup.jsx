@@ -9,7 +9,6 @@ export const Signup = () => {
           username : "",
           email: "",
           password : "",
-          role: "",
     });
 
     const handleSubmit =  async (e) => {

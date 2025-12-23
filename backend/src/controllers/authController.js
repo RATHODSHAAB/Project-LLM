@@ -26,11 +26,7 @@ exports.signup  = async (req,res) => {
         //Getting the {username} , email , passsowrd from the body of the request
     const {username, email , password  } = req.body;
 
-    const allowedRoles = ["student", "instructor"];
-    const role = allowedRoles.includes(req.body.role)
-      ? req.body.role
-      : "student";
-
+    const role = "student";
     //Checking if user exist or not => I think this is not needed 
     const exisitingUser = await User.findOne({
         $or : [{username},{email} ]
@@ -46,7 +42,7 @@ exports.signup  = async (req,res) => {
         username:username,
         email:email,
         password: hashedPassword,
-        role,
+        role ,
     });
 
     

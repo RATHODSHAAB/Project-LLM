@@ -1,10 +1,20 @@
+import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 
 export const Navbar = ({ type }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const user  = token ? jwtDecode(token) : null;
+  
+  // Safely decode the token with error handling
+  let user = null;
+  if (token) {
+    try {
+      user = jwtDecode(token);
+    } catch (error) {
+      console.error("Invalid token:", error);
+      localStorage.removeItem("token");
+    }
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("token");
