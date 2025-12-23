@@ -15,8 +15,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://project-8r51fgz2m-rathodshaabs-projects.vercel.app",
-  "https://project-5o7plcmx3-rathodshaabs-projects.vercel.app"  // ✅ ADD THIS
+  "http://lms-pearl-seven.vercel.app"  // ✅ ADD THIS
 ];
 
 app.use(cors({
