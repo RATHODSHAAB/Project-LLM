@@ -7,22 +7,63 @@ import { AddCourse } from './Pages/AddCourse'
 import { AddLesson } from './Pages/AddLesson'
 import { CourseDetails } from './Pages/CourseDetails'
 import { LessonPlayer } from './Pages/LessonPlayer'
+import { Dashboard } from './Pages/Dashborad'
+import { ProtectedRoute } from './Components/ProtectedRoute'
 
 function App() {
  return (
-  <>
-    <BrowserRouter>
-        <Routes>
-            <Route path='/signup' element={<Signup></Signup>}></Route>
-            <Route path='/login' element={<Login></Login>}></Route>
-            <Route path='/courselist' element={<CourseList></CourseList>}></Route>
-            <Route path='/addcourse' element={<AddCourse></AddCourse>}></Route>
-            <Route path='/courses/:courseId/add-lesson' element={<AddLesson></AddLesson>}></Route>
-            <Route path='/courses/:courseId' element={<CourseDetails></CourseDetails>}></Route>
-            <Route path="/lessons/:lessonId" element={<LessonPlayer />} />
-        </Routes>
-    </BrowserRouter>
-  </>
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+
+      <Route
+        path="/courselist"
+        element={
+          <ProtectedRoute>
+            <CourseList />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/addcourse"
+        element={
+          <ProtectedRoute>
+            <AddCourse />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/courses/:courseId"
+        element={
+          <ProtectedRoute>
+            <CourseDetails />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/courses/:courseId/add-lesson"
+        element={
+          <ProtectedRoute>
+            <AddLesson />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/lessons/:lessonId"
+        element={
+          <ProtectedRoute>
+            <LessonPlayer />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  </BrowserRouter>
  )
 }
 

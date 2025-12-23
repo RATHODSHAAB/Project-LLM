@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { Navbar } from "../Components/Navbar";
+import {jwtDecode} from 'jwt-decode';
 
 export const CourseDetails = () => {
   const { courseId } = useParams();
   const [lessons, setLessons] = useState([]);
+
+
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -18,22 +21,28 @@ export const CourseDetails = () => {
       },
     }
       );
+      
       setLessons(res.data.lessons);
     };
 
     fetchLessons();
   }, [courseId]);
 
+  const token = localStorage.getItem("token");
+  const user  = token ? jwtDecode(token) : null;
   return (
     <>
       <Navbar />
       <div className="min-h-screen bg-linear-to-br from-gray-900 to-black p-6">
         <div className=" w-full flex justify-end">
-          <Link to={`/courses/${courseId}/add-lesson`}>
+
+          {user?.role == "instructor" && (
+            <Link to={`/courses/${courseId}/add-lesson`}>
             <button className= " bg-green-600  rounded-xl text-white p-1.5 mr-32 mt-1.5 cursor-pointer">
-              Add course
+              Add Lesson
             </button>
           </Link>
+          )}
 
         </div>
 
